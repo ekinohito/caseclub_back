@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "caseclub-back"
+version = "0.1.0"
+description = "Bauman Case Club Portal Backend"
+authors = ["Evgeny Guryanov <emguryanov@yandex-team.ru>"]
+readme = "README.md"
+packages = [{include = "caseclub_back"}]
+
+[tool.poetry.scripts]
+create-db = "caseclub_back.db.database:create_db_and_tables"
+populate = "caseclub_back.db.populate:populate"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+sqlmodel = "^0.0.8"
+fastapi = "^0.85.0"
+uvicorn = {extras = ["standard"], version = "^0.18.3"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.5"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
