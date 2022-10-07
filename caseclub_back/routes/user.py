@@ -3,7 +3,7 @@ from typing import List
 from .auth import get_password_hash, get_current_user
 from ..db.models import UserCreate, UserRead, User
 from ..db.database import engine
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends 
 from sqlmodel import Session, select
 from pydantic import BaseModel
 
@@ -13,9 +13,12 @@ class Token(BaseModel):
 
 router = APIRouter(prefix="/user", tags=["user"])
 
-@router.post("/", response_model=UserRead)
+@router.post("/", response_model=UserRead, responses={404: {"description": "User exists"}})
 async def create_user(user: UserCreate):
     with Session(engine) as session:
+        existing_user = session.exec(select(User).where(User.email == user.email)).first()
+        if existing_user is not None:
+            raise HTTPException(400, "User with this email already exists")
         hashed_password = get_password_hash(user.password)
         user: User = User.from_orm(user, {"hashed_password": hashed_password})
         session.add(user)

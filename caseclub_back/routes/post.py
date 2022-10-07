@@ -1,7 +1,8 @@
 from typing import List, Optional
-from ..db.models import PostCreate, PostRead, Post
+from .auth import get_current_user
+from ..db.models import PostCreate, PostRead, Post, UserLikesPost
 from ..db.database import engine
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 
 router = APIRouter(prefix="/post", tags=["post"])
@@ -40,15 +41,22 @@ async def delete_post(id: int):
     
 
 @router.post("/like/{id}", response_model=int)
-async def like_post(id: int, remove: Optional[bool]=False):
+async def like_post(id: int, remove: Optional[bool]=False, user=Depends(get_current_user)):
     with Session(engine) as session:
         post = session.exec(select(Post).where(Post.id == id)).first()
         if (post is None):
             raise HTTPException(404, "Post not found")
+        is_liked = session.exec(
+            select(UserLikesPost).where(UserLikesPost.user_id == user.id, UserLikesPost.post_id == post.id)
+            ).first() is not None
+        if remove != is_liked:
+            raise HTTPException(400, 'Already liked/disliked')
         if remove:
             post.likes -= 1
+            post.users.remove(user)
         else:
             post.likes += 1
+            post.users.append(user)
         session.add(post)
         session.commit()
         return post.likes
