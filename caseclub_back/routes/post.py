@@ -1,6 +1,6 @@
 from typing import List, Optional
 from .auth import get_current_user
-from ..db.models import PostCreate, PostRead, Post, UserLikesPost
+from ..db.models import PostCreate, PostEdit, PostRead, Post, UserLikesPost
 from ..db.database import engine
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
@@ -19,7 +19,7 @@ async def create_post(post: PostCreate):
 @router.get("/", response_model=List[PostRead])
 async def get_posts(offset: int=0, limit: int=20):
     with Session(engine) as session:
-        return session.exec(select(Post).offset(offset).limit(limit).order_by(Post.created_at)).all()
+        return session.exec(select(Post).offset(offset).limit(limit).order_by(Post.created_at.desc())).all()
 
 @router.get("/{id}", response_model=PostRead, responses={404: {"description": "Not found"}})
 async def get_posts(id: int):
@@ -60,3 +60,14 @@ async def like_post(id: int, remove: Optional[bool]=False, user=Depends(get_curr
         session.add(post)
         session.commit()
         return post.likes
+
+@router.patch("/{id}")
+async def edit_post(id: int, patch: PostEdit):
+    with Session(engine) as session:
+        post = session.exec(select(Post).where(Post.id == id)).first()
+        for k, v in patch.dict(exclude_unset=True).items():
+            setattr(post, k, v)
+        session.add(post)
+        session.commit()
+        session.refresh(post)
+        return post

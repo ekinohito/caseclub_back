@@ -22,10 +22,14 @@ class PostRead(BasePost):
     id: int
     likes: int
 
+class PostEdit(SQLModel):
+    text: Optional[str]
+
 
 class BaseUser(SQLModel):
     email: str = Field(index=True, unique=True)
     name: str
+    picture: Optional[str] = None
 
 class User(BaseUser, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -41,3 +45,10 @@ class UserRead(BaseUser):
 class UserLogin(SQLModel):
     email: str
     password: str
+
+class UserEdit(SQLModel):
+    email: Optional[str]
+    name: Optional[str]
+    password: Optional[str]
+    picture: Optional[str]
+
