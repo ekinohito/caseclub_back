@@ -18,6 +18,7 @@ uvicorn = {extras = ["standard"], version = "^0.18.3"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.5"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+sqladmin = "^0.6.1"
 
 
 [build-system]

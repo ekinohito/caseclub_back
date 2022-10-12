@@ -1,6 +1,7 @@
 from typing import List
 
-from .auth import get_password_hash, get_current_user
+from ..utils.password_hash import get_password_hash
+from .auth import get_current_user
 from ..db.models import UserCreate, UserRead, User
 from ..db.database import engine
 from fastapi import APIRouter, HTTPException, Depends 
