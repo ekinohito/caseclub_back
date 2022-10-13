@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from .admin import AttachmentAdmin, ImageAdmin, PostAdmin, UserAdmin
+from .admin import ImageAdmin, PostAdmin, UserAdmin
 from .routes import post, user, auth, images
 from .db.database import engine
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,5 +29,4 @@ app.include_router(images.router)
 admin = Admin(app, engine)
 admin.add_view(UserAdmin)
 admin.add_view(PostAdmin)
-admin.add_view(AttachmentAdmin)
 admin.add_view(ImageAdmin)

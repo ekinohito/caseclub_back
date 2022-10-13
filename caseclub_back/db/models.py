@@ -7,6 +7,10 @@ class UserLikesPost(SQLModel, table=True):
     user_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="user.id")
     post_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="post.id")
 
+class Attachment(SQLModel, table=True):
+    post_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="post.id")
+    image_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="image.id")
+
 class BasePost(SQLModel):
     text: str
 
@@ -15,7 +19,7 @@ class Post(BasePost, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     likes: Optional[int] = 0
     users: List["User"] = Relationship(back_populates="liked_posts", link_model=UserLikesPost)
-    attachments: List["Attachment"] = Relationship(back_populates="post")
+    images: List["Image"] = Relationship(back_populates="posts", link_model=Attachment)
 
 class PostCreate(BasePost):
     pass
@@ -24,6 +28,7 @@ class PostRead(BasePost):
     id: int
     likes: int
     is_liked: Optional[bool]
+    images: List[int]
 
 class PostEdit(SQLModel):
     text: Optional[str]
@@ -55,13 +60,11 @@ class UserEdit(SQLModel):
     password: Optional[str]
     picture: Optional[str]
 
-class Attachment(SQLModel, table=True):
-    post_id: int = Field(default=None, primary_key=True, foreign_key="post.id")
-    image_id: int = Field(default=None, primary_key=True, foreign_key="image.id")
-    post: Post = Relationship(back_populates="attachments")
+
 
 class BaseImage(SQLModel):
     data: bytes
 
 class Image(BaseImage, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    posts: List[Post] = Relationship(back_populates="images", link_model=Attachment)

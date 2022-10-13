@@ -19,7 +19,7 @@ async def upload_image(file: bytes = File(), session: Session = Depends(get_sess
 
 @router.get('/{id}', responses={
         200: {
-            "content": {"image/*": {}},
+            "content": {"image/png": {}},
             "description": "Returns an image.",
         }
     },
@@ -29,6 +29,4 @@ def get_image(id: int, session: Session = Depends(get_session)):
     image = session.exec(select(Image).where(Image.id == id)).first()
     if image is None:
         raise HTTPException(404, 'Not found')
-    def wrapper():
-        yield image.data
-    return StreamingResponse(wrapper(), media_type="image/png")
+    return Response(content=image.data, media_type="image/png")

@@ -1,6 +1,6 @@
 from typing import List, Optional
 from .auth import get_current_user, require_current_user
-from ..db.models import PostCreate, PostEdit, PostRead, Post, User, UserLikesPost
+from ..db.models import Attachment, Image, PostCreate, PostEdit, PostRead, Post, User, UserLikesPost
 from ..db.database import get_session
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select, Session, or_
@@ -14,17 +14,26 @@ async def get_post(id: int, session: Session = Depends(get_session)):
     return post
 
 @router.post("/", response_model=PostRead)
-async def create_post(post: PostCreate, session:Session=Depends(get_session)):
-    post = Post.from_orm(post)
+async def create_post(post: PostCreate, images: List[int], session:Session=Depends(get_session)):
+    post: Post = Post.from_orm(post)
     session.add(post)
     session.commit()
     session.refresh(post)
-    return post
+    for image in images:
+        image: Image = session.exec(select(Image).where(Image.id == image)).first()
+        if image is None:
+            continue
+        post.images.append(image)
+    session.add(post)
+    session.commit()
+    session.refresh(post)
+    return PostRead.from_orm(post, {"images": [image.id for image in post.images]})
 
 @router.get("/", response_model=List[PostRead])
 async def get_posts(offset: int=0, limit: int=20, session:Session=Depends(get_session), user:Optional[User] = Depends(get_current_user)):
     if user is None:
-        return session.exec(select(Post).offset(offset).limit(limit).order_by(Post.created_at.desc())).all()
+        posts = session.exec(select(Post).offset(offset).limit(limit).order_by(Post.created_at.desc())).all()
+        return [PostRead.from_orm(post, {'images': [image.id for image in post.images]}) for post in posts]
     postsWithLikes = session.exec(
         select(Post, UserLikesPost)
         .join(UserLikesPost, isouter=True)
@@ -34,7 +43,7 @@ async def get_posts(offset: int=0, limit: int=20, session:Session=Depends(get_se
         .order_by(Post.created_at.desc())
         ).all()
     print(postsWithLikes)
-    return [PostRead.from_orm(post, {'is_liked': like is not None}) for post, like in postsWithLikes]
+    return [PostRead.from_orm(post, {'is_liked': like is not None, 'images': [1, 2, 3]}) for post, like in postsWithLikes]
 
 id_router = APIRouter(prefix="/{id}")
 
