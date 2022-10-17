@@ -1,7 +1,7 @@
 from typing import List
 
 from ..utils.password_hash import get_password_hash
-from .auth import get_current_user
+from .auth import get_current_user, require_current_user
 from ..db.models import UserCreate, UserRead, User
 from ..db.database import engine
 from fastapi import APIRouter, HTTPException, Depends 
@@ -32,9 +32,9 @@ async def get_users(offset: int=0, limit: int=20):
     with Session(engine) as session:
         return session.exec(select(User).offset(offset).limit(limit)).all()
 
-@router.get("/secret")
-async def secret(user: User = Depends(get_current_user)):
-    return "secret " + user.email
+@router.get("/current", response_model=UserRead)
+async def current(user: User = Depends(require_current_user)):
+    return user
 
 @router.get("/{id}", response_model=UserRead, responses={404: {"description": "Not found"}})
 async def get_users(id: int):

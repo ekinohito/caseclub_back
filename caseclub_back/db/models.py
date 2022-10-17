@@ -35,6 +35,7 @@ class PostEdit(SQLModel):
 
 
 class BaseUser(SQLModel):
+    roles: Optional[str] = None
     email: str = Field(index=True, unique=True)
     name: str
     image_id: Optional[int] = Field(default=None, foreign_key="image.id")

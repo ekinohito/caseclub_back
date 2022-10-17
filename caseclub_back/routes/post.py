@@ -3,7 +3,7 @@ from .auth import get_current_user, require_current_user
 from ..db.models import Attachment, Image, PostCreate, PostEdit, PostRead, Post, User, UserLikesPost
 from ..db.database import get_session
 from fastapi import APIRouter, HTTPException, Depends
-from sqlmodel import select, Session, or_
+from sqlmodel import select, Session, or_, and_
 
 router = APIRouter(prefix="/post", tags=["post"])
 
@@ -36,14 +36,13 @@ async def get_posts(offset: int=0, limit: int=20, session:Session=Depends(get_se
         return [PostRead.from_orm(post, {'images': [image.id for image in post.images]}) for post in posts]
     postsWithLikes = session.exec(
         select(Post, UserLikesPost)
-        .join(UserLikesPost, isouter=True)
-        .where(or_(UserLikesPost.user_id == None, UserLikesPost.user_id == user.id))
+        .join(UserLikesPost, isouter=True, onclause=and_(UserLikesPost.post_id == Post.id, UserLikesPost.user_id == user.id))
         .offset(offset)
         .limit(limit)
         .order_by(Post.created_at.desc())
         ).all()
     print(postsWithLikes)
-    return [PostRead.from_orm(post, {'is_liked': like is not None, 'images': [1, 2, 3]}) for post, like in postsWithLikes]
+    return [PostRead.from_orm(post, {'is_liked': like is not None, 'images': [image.id for image in post.images]}) for post, like in postsWithLikes]
 
 id_router = APIRouter(prefix="/{id}")
 
