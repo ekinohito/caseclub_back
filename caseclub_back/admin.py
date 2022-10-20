@@ -1,5 +1,5 @@
 
-from .db.models import Image, Post, User
+from .db.models import Event, Image, Post, User
 from sqladmin import ModelView
 
 
@@ -10,4 +10,7 @@ class PostAdmin(ModelView, model=Post):
     column_list = [Post.id, Post.text]
 
 class ImageAdmin(ModelView, model=Image):
+    pass
+
+class EventAdmin(ModelView, model=Event):
     pass

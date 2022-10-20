@@ -1,11 +1,15 @@
 from datetime import datetime
-import enum
 from typing import List, Optional
 from sqlmodel import Field, SQLModel, Relationship
 
 class UserLikesPost(SQLModel, table=True):
     user_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="user.id")
     post_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="post.id")
+
+class UserAttendsEvent(SQLModel, table=True):
+    user_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="user.id")
+    event_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="event.id")
+
 
 class Attachment(SQLModel, table=True):
     post_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="post.id")
@@ -29,6 +33,7 @@ class PostRead(BasePost):
     likes: int
     is_liked: Optional[bool]
     images: List[int]
+    created_at: datetime
 
 class PostEdit(SQLModel):
     text: Optional[str]
@@ -44,6 +49,8 @@ class User(BaseUser, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
     liked_posts: List["Post"] = Relationship(back_populates="users", link_model=UserLikesPost)
+    events: List["Event"] = Relationship(back_populates="users", link_model=UserAttendsEvent)
+    image: "Image" = Relationship()
 
 class UserCreate(BaseUser):
     password: str
@@ -69,3 +76,21 @@ class BaseImage(SQLModel):
 class Image(BaseImage, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     posts: List[Post] = Relationship(back_populates="images", link_model=Attachment)
+
+
+class BaseEvent(SQLModel):
+    title: str = ''
+    text: str = ''
+    icon: str = ''
+    start_date: datetime
+    end_date: datetime
+
+class Event(BaseEvent, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    users: List[User] = Relationship(back_populates="events", link_model=UserAttendsEvent)
+
+class EventCreate(BaseEvent):
+    pass
+
+class EventRead(BaseEvent):
+    id: int
