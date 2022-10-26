@@ -2,10 +2,12 @@ from datetime import datetime
 from typing import List
 from random import choice
 from sqlmodel import Session
-from os.path import join
 from pathlib import Path
-from .database import engine
-from .models import Event, Image, Post, UserCreate
+from .database import create_db_and_tables, engine
+from .models.event import Event
+from .models.image import Image
+from .models.post import Post
+from .models.user import UserCreate
 from ..utils.password_hash import register_user
 
 def get_mocks_generator():
@@ -57,3 +59,8 @@ def populate():
         populate_users(session)
         populate_posts(session)
         populate_events(session)
+
+
+def load():
+    create_db_and_tables()
+    populate()

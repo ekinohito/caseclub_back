@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
-from ..db.models import Attachment, Event, EventRead, Image, PostCreate, PostEdit, PostRead, Post, User, UserLikesPost
+from typing import List
+from ..db.models.event import Event, EventRead
 from ..db.database import get_session
 from fastapi import APIRouter, HTTPException, Depends
-from sqlmodel import select, Session, or_, and_
+from sqlmodel import select, Session
 
 router = APIRouter(prefix="/event", tags=["event"])
 

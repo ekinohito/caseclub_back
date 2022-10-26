@@ -1,7 +1,7 @@
 from typing import Optional
 
 from ..utils.password_hash import verify_password
-from ..db.models import UserRead, User
+from ..db.models.user import UserRead, User
 from ..db.database import engine
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select

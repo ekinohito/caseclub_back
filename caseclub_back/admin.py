@@ -1,5 +1,8 @@
 
-from .db.models import Event, Image, Post, User
+from .db.models.user import User
+from .db.models.post import Post
+from .db.models.image import Image
+from .db.models.event import Event
 from sqladmin import ModelView
 
 

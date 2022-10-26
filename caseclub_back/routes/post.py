@@ -1,9 +1,11 @@
 from typing import List, Optional
 from .auth import get_current_user, require_current_user
-from ..db.models import Attachment, Image, PostCreate, PostEdit, PostRead, Post, User, UserLikesPost
+from ..db.models.post import PostCreate, PostEdit, PostRead, Post
+from ..db.models.image import Image
+from ..db.models.user import User, UserLikesPost
 from ..db.database import get_session
 from fastapi import APIRouter, HTTPException, Depends
-from sqlmodel import select, Session, or_, and_
+from sqlmodel import select, Session, and_
 
 router = APIRouter(prefix="/post", tags=["post"])
 

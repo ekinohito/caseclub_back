@@ -1,4 +1,4 @@
-from ..db.models import User, UserCreate
+from ..db.models.user import User, UserCreate
 from passlib.context import CryptContext
 
 

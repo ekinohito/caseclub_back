@@ -1,7 +1,6 @@
 from fastapi import APIRouter, File, Depends, HTTPException
-from fastapi.responses import StreamingResponse, Response
-
-from ..db.models import Image
+from fastapi.responses import Response
+from ..db.models.image import Image
 from ..db.database import get_session
 from sqlmodel import Session, select, SQLModel
 

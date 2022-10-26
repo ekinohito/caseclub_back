@@ -1,8 +1,8 @@
 from typing import List
 
 from ..utils.password_hash import get_password_hash
-from .auth import get_current_user, require_current_user
-from ..db.models import UserCreate, UserRead, User
+from .auth import require_current_user
+from ..db.models.user import UserCreate, UserRead, User
 from ..db.database import engine
 from fastapi import APIRouter, HTTPException, Depends 
 from sqlmodel import Session, select
