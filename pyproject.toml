@@ -21,6 +21,7 @@ python-multipart = "^0.0.5"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 sqladmin = "^0.6.1"
 psycopg2 = "^2.9.4"
+asyncpg = "^0.26.0"
 
 
 [build-system]

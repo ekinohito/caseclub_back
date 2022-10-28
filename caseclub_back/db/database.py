@@ -1,7 +1,8 @@
+import os
 from sqlmodel import SQLModel, create_engine, Session
 from .models import *
 
-postgres_url='postgresql://postgres:postgres@localhost:5433/caseclub'
+postgres_url=os.environ.get('DATABASE_URL') or 'postgresql://postgres:postgres@localhost:5433/caseclub'
 
 engine = create_engine(postgres_url)
 
