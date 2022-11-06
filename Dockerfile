@@ -15,12 +15,16 @@ RUN apt-get update \
 
 # install python dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt .
+
+RUN pip install poetry
+
+COPY pyproject.toml poetry.lock ./
+
+RUN poetry config virtualenvs.create false
+
+RUN poetry export -f requirements.txt --output requirements.txt
+
 RUN pip install -r requirements.txt
 
 # add app
 COPY . .
-
-WORKDIR /usr/src
-
-ENTRYPOINT uvicorn caseclub_back.main:app --reload --host 0.0.0.0 --port 8000

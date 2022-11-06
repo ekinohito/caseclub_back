@@ -3,11 +3,9 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from .admin import EventAdmin, ImageAdmin, PostAdmin, UserAdmin
+from .admin import add_admin
 from .routes import post, user, auth, images, event
-from .db.database import engine
 from fastapi.middleware.cors import CORSMiddleware
-from sqladmin import Admin
 
 origins = [
     "http://localhost",
@@ -33,9 +31,4 @@ app.include_router(auth.router)
 app.include_router(images.router)
 app.include_router(event.router)
 
-
-admin = Admin(app, engine)
-admin.add_view(UserAdmin)
-admin.add_view(PostAdmin)
-admin.add_view(ImageAdmin)
-admin.add_view(EventAdmin)
+add_admin(app)
