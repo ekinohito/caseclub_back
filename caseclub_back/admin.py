@@ -15,7 +15,7 @@ class PostAdmin(ModelView, model=Post):
     column_list = [Post.id, Post.text, Post.likes]
 
 class ImageAdmin(ModelView, model=Image):
-    column_list = [Image.id]
+    column_list = [Image.id, Image.content_type]
 
 class EventAdmin(ModelView, model=Event):
     column_list = [Event.id, Event.icon, Event.title]

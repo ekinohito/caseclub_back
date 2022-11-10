@@ -16,7 +16,8 @@ async def get_post(id: int, session: Session = Depends(get_session)):
     return post
 
 @router.post("/", response_model=PostRead)
-async def create_post(post: PostCreate, images: List[int], session:Session=Depends(get_session)):
+async def create_post(post: PostCreate, session:Session=Depends(get_session)):
+    images = post.images
     post: Post = Post.from_orm(post)
     session.add(post)
     session.commit()

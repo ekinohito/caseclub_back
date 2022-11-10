@@ -1,10 +1,9 @@
-from unicodedata import name
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from .admin import add_admin
-from .routes import post, user, auth, images, event
+from .routes import post, user, auth, images, event, management
 from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
@@ -30,5 +29,6 @@ app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(images.router)
 app.include_router(event.router)
+app.include_router(management.router)
 
 add_admin(app)

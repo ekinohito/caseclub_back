@@ -6,7 +6,12 @@ if TYPE_CHECKING:
 
 class BaseImage(SQLModel):
     data: bytes
+    content_type: str
 
 class Image(BaseImage, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     posts: List["Post"] = Relationship(back_populates="images", link_model=Attachment)
+
+class ImageRead(SQLModel):
+    id: int
+    content_type: str

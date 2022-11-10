@@ -17,7 +17,7 @@ def get_mocks_generator():
         with open(file, "rb") as mock:
             mocks.append(mock.read())
     while True:
-        yield Image(data=choice(mocks))
+        yield Image(data=choice(mocks), content_type='image/jpeg')
 
 mock_generator = get_mocks_generator()
 
@@ -49,7 +49,7 @@ def populate_events(session: Session):
         Event(title="Занятие", text='Lorem ipsum', icon='👩‍🎓', start_date=datetime(2022, 10, 12, 17), end_date=datetime(2022, 10, 12, 19)),
         Event(title="Занятие", text='Lorem ipsum', icon='👩‍🎓', start_date=datetime(2022, 10, 19, 17), end_date=datetime(2022, 10, 19, 19)),
         Event(title="Занятие", text='Lorem ipsum', icon='👩‍🎓', start_date=datetime(2022, 10, 26, 17), end_date=datetime(2022, 10, 26, 19)),
-        Event(title="Награждение победителей", text='Lorem ipsum', icon='🥇', start_date=datetime(2022, 10, 26, 19), end_date=datetime(2022, 10, 26, 20)),
+        Event(title="Награждение победителей", text='Lorem ipsum', icon='🥇', start_date=datetime(2022, 11, 26, 19), end_date=datetime(2022, 11, 26, 20)),
     ]
     session.add_all(events)
     session.commit()

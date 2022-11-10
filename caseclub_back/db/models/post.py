@@ -18,7 +18,7 @@ class Post(BasePost, table=True):
     images: List["Image"] = Relationship(back_populates="posts", link_model=Attachment)
 
 class PostCreate(BasePost):
-    pass
+    images: List[int]
 
 class PostRead(BasePost):
     id: int

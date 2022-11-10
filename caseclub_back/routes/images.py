@@ -1,20 +1,20 @@
-from fastapi import APIRouter, File, Depends, HTTPException
+from fastapi import APIRouter, File, Depends, HTTPException, UploadFile
 from fastapi.responses import Response
-from ..db.models.image import Image
+from ..db.models.image import Image, ImageRead
 from ..db.database import get_session
-from sqlmodel import Session, select, SQLModel
+from sqlmodel import Session, select
 
 router = APIRouter(prefix="/images", tags=["images"])
 
-class ImageRead(SQLModel):
-    id: int
-
 @router.post('/', response_model=ImageRead)
-async def upload_image(file: bytes = File(), session: Session = Depends(get_session)):
-    image = Image(data=file)
+async def upload_image(file: UploadFile = File(), session: Session = Depends(get_session)):
+    content_type = file.headers.get('content-type')
+    if content_type is None:
+        raise HTTPException(400, 'Missing Content-Type Header')
+    image = Image(data=await file.read(), content_type=content_type)
     session.add(image)
     session.commit()
-    return {"id": image.id}
+    return image
 
 @router.get('/{id}', responses={
         200: {
@@ -28,4 +28,4 @@ def get_image(id: int, session: Session = Depends(get_session)):
     image = session.exec(select(Image).where(Image.id == id)).first()
     if image is None:
         raise HTTPException(404, 'Not found')
-    return Response(content=image.data, media_type="image/png")
+    return Response(content=image.data, media_type=image.content_type)

@@ -21,3 +21,4 @@ class EventCreate(BaseEvent):
 
 class EventRead(BaseEvent):
     id: int
+    is_attended: Optional[bool]
