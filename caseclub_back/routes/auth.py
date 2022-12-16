@@ -2,7 +2,7 @@ from typing import Optional
 
 from ..utils.password_hash import verify_password
 from ..db.models.user import UserRead, User
-from ..db.database import engine
+from ..db.database import engine, get_session
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 from pydantic import BaseModel
@@ -47,14 +47,13 @@ class Token(BaseModel):
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/token", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    with Session(engine) as session:
-        email = form_data.username
-        password = form_data.password
-        user = session.exec(select(User).where(User.email == email)).first()
-        if user is None:
-            raise HTTPException(401, "Wrong email/password")
-        if not verify_password(password, user.hashed_password):
-            raise HTTPException(401, "Wrong email/password")
-        return {"access_token": jwt.encode(UserRead.from_orm(user).dict(), SECRET_KEY, ALGORITHM), "token_type": "bearer"}
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
+    email = form_data.username
+    password = form_data.password
+    user = session.exec(select(User).where(User.email == email)).first()
+    if user is None:
+        raise HTTPException(401, "Wrong email/password")
+    if not verify_password(password, user.hashed_password):
+        raise HTTPException(401, "Wrong email/password")
+    return {"access_token": jwt.encode(UserRead.from_orm(user).dict(), SECRET_KEY, ALGORITHM), "token_type": "bearer"}
 

@@ -44,7 +44,6 @@ async def get_posts(offset: int=0, limit: int=20, session:Session=Depends(get_se
         .limit(limit)
         .order_by(Post.created_at.desc())
         ).all()
-    print(postsWithLikes)
     return [PostRead.from_orm(post, {'is_liked': like is not None, 'images': [image.id for image in post.images]}) for post, like in postsWithLikes]
 
 id_router = APIRouter(prefix="/{id}")
